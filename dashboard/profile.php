@@ -20,7 +20,7 @@ include("./include/DashboardHeader.php");
                                     <label for="avatar">
                                         <img src="<?= getProfileImg() ?>" class="rounded-circle w-100 profile-img" />
                                     </label>
-                                    <input type="file" id="avatar" name="profile_img" value="" class="d-none">
+                                    <input accept=".jpg, .jpeg, .png, .svg" type="file" id="avatar" name="profile_img" value="" class="d-none">
                                     <span class="text-danger"><?= $_SESSION["errors"]["image_error"] ?? null ?></span>
                                 </div>
                                 <div class="col-lg-9">
@@ -64,3 +64,18 @@ include("./include/DashboardFooter.php");
 
     imageInput.addEventListener("change", ProfileImageUpdate);
 </script>
+
+<?php
+if (isset($_SESSION["success"])) {
+?>
+    <script>
+        Toast.fire({
+            icon: "success",
+            title: "Profile updated successfully"
+        });
+    </script>
+<?php
+}
+unset($_SESSION["errors"]);
+unset($_SESSION["success"]);
+?>

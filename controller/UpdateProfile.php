@@ -2,10 +2,19 @@
 session_start();
 include("../database/env.php");
 
+$user_id = $_SESSION["auth"]["id"];
 $name = $_REQUEST["name"];
 $email = $_REQUEST["email"];
 $img = $_FILES["profile_img"];
+$extension = pathinfo($img["name"])["extension"] ?? null;
 $isValidEmail = filter_var($email, FILTER_VALIDATE_EMAIL);
+
+$accepted_extension = [
+    "jpg",
+    "png",
+    "jpeg",
+    "svg"
+];
 
 $errors = [];
 
@@ -27,17 +36,42 @@ if (empty($email)) {
     }
 }
 
-if ($img["error"]) {
-    $errors["image_error"] = "Invalid Image!";
-} else if (!($img["type"] == "image/png" || $img["type"] == "image/jpeg")) {
-    $errors["image_error"] = "Invalid Image Format!. JPG and PNG Allowed.";
-} else if (round($img["size"] / 1024) > 300) {
-    $errors["image_error"] = "Image Size Should Be Less Than 300KB";
+if ($img["size"] > 0) {
+    if (!in_array($extension, $accepted_extension)) {
+        $errors["image_error"] = "$extension is not acceptable. Accepted extension are " . join(", ", $accepted_extension);
+    }
 }
 
 if (count($errors) > 0) {
     $_SESSION["errors"] = $errors;
     header("Location: ../dashboard/profile.php");
 } else {
-    // Update Database
+    if ($img["size"] > 0) {
+        define("UPLOAD_PATH", "../uploads");
+        if (!file_exists(UPLOAD_PATH)) {
+            mkdir(UPLOAD_PATH);
+        }
+
+        $old_profile_img = $_SESSION["auth"]["profile_img"];
+        if (!empty($old_profile_img) && file_exists($old_profile_img)) {
+            unlink($old_profile_img);
+        }
+
+        $file_name = pathinfo($img["name"])["filename"] . uniqid() . ".$extension";
+        move_uploaded_file($img["tmp_name"], UPLOAD_PATH . "/$file_name");
+
+        $query = "UPDATE users SET name='$name', email='$email', profile_img='../uploads/$file_name' WHERE id='$user_id'";
+    } else {
+        $query = "UPDATE users SET name='$name', email='$email' WHERE id='$user_id'";
+    }
+
+    $res = mysqli_query($conn, $query);
+    if ($res) {
+        $query = "SELECT * FROM users WHERE id='$user_id'";
+        $result = mysqli_query($conn, $query);
+        $user = mysqli_fetch_assoc($result);
+        $_SESSION["auth"] = $user;
+        $_SESSION["success"] = true;
+        header("Location: ../dashboard/profile.php");
+    }
 }

@@ -11,7 +11,11 @@ define("API_URL", "https://api.dicebear.com/9.x/initials/svg?seed=");
 function getProfileImg()
 {
     if ($_SESSION["auth"]["profile_img"]) {
-        return $_SESSION["auth"]["profile_img"];
+        if (file_exists($_SESSION["auth"]["profile_img"])) {
+            return $_SESSION["auth"]["profile_img"];
+        } else {
+            return "./assets/img/avatars/user_avater.png";
+        }
     } else {
         return API_URL . strtoupper($_SESSION["auth"]["name"]);
     }
@@ -99,7 +103,7 @@ function getProfileImg()
             <div class="layout-page">
                 <!-- Navbar -->
 
-                <nav
+                <nav style="z-index: 2 !important"
                     class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
                     id="layout-navbar">
                     <div class="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0 d-xl-none">
