@@ -36,17 +36,22 @@ include("./include/DashboardHeader.php");
             </div>
         </div>
         <div class="col-lg-4">
-            <div class="card shadow p-3">
-                <form action="" method="POST">
-                    <label for="current_password">Current Password</label>
-                    <input type="password" name="current_password" id="current_password" class="form-control my-2" placeholder="Current Password" />
-                    <label for="new_password">New Password</label>
-                    <input type="password" name="new_password" id="new_password" class="form-control my-2" placeholder="New Password" />
+            <div class="card shadow">
+                <form action="../controller/UpdatePassword.php" method="POST" class="card-body">
+                    <span class="text-danger"><?= $_SESSION["errors"]["user_error"] ?? null ?></span>
+                    <input type="password" name="current_password" id="current_password" class="form-control my-2" placeholder="Enter Current Password" />
+                    <span class="text-danger"><?= $_SESSION["errors"]["current_password_error"] ?? null ?></span>
+                    <input type="password" name="new_password" id="new_password" class="form-control my-2" placeholder="Enter New Password" />
+                    <span class="text-danger"><?= $_SESSION["errors"]["new_password_error"] ?? null ?></span>
+                    <input type="password" name="confirm_password" id="confirm_password" class="form-control my-2" placeholder="Enter New Password" />
+                    <span class="text-danger"><?= $_SESSION["errors"]["confirm_password_error"] ?? null ?></span>
+                    <br />
                     <button class="btn btn-primary">Update Password</button>
                 </form>
             </div>
         </div>
     </div>
+</div>
 </div>
 <!-- / Content -->
 
@@ -76,6 +81,17 @@ if (isset($_SESSION["success"])) {
     </script>
 <?php
 }
+if (isset($_SESSION["password"])) {
+?>
+    <script>
+        Toast.fire({
+            icon: "success",
+            title: "Password updated successfully"
+        });
+    </script>
+<?php
+}
 unset($_SESSION["errors"]);
 unset($_SESSION["success"]);
+unset($_SESSION["password"]);
 ?>
