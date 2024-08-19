@@ -1,3 +1,8 @@
+<?php
+include("./database/env.php");
+session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -88,20 +93,25 @@
   <main class="main">
 
     <!-- Hero Section -->
+
     <section id="hero" class="hero section light-background">
 
       <div class="container">
         <div class="row gy-4 justify-content-center justify-content-lg-between">
           <div class="col-lg-5 order-2 order-lg-1 d-flex flex-column justify-content-center">
-            <h1 data-aos="fade-up">Enjoy Your Healthy<br>Delicious Food</h1>
-            <p data-aos="fade-up" data-aos-delay="100">We are team of talented designers making websites with Bootstrap</p>
+            <h1 data-aos="fade-up"><?= $_SESSION["banner"]["title"] ?? "Enjoy Your Healthy<br>Delicious Food" ?></h1>
+            <p data-aos="fade-up" data-aos-delay="100"><?= $_SESSION["banner"]["detail"] ?? "We are team of talented designers making websites with Bootstrap" ?></p>
             <div class="d-flex" data-aos="fade-up" data-aos-delay="200">
-              <a href="#book-a-table" class="btn-get-started">Booka a Table</a>
-              <a href="https://www.youtube.com/watch?v=LXb3EKWsInQ" class="glightbox btn-watch-video d-flex align-items-center"><i class="bi bi-play-circle"></i><span>Watch Video</span></a>
+              <a class="btn-get-started"
+                href=<?= $_SESSION["banner"]["cta_link"] == "" ? "#book-a-table" : $_SESSION["banner"]["cta_link"] ?>>
+                <?= $_SESSION["banner"]["cta_title"] == "" ? "Book a Table" : $_SESSION["banner"]["cta_title"] ?></a>
+              <a class="glightbox btn-watch-video d-flex align-items-center"
+                href=<?= $_SESSION["banner"]["video_link"] == "" ? "https://www.youtube.com/watch?v=LXb3EKWsInQ"
+                        : $_SESSION["banner"]["video_link"] ?>><i class="bi bi-play-circle"></i><span>Watch Video</span></a>
             </div>
           </div>
           <div class="col-lg-5 order-1 order-lg-2 hero-img" data-aos="zoom-out">
-            <img src="assets/img/hero-img.png" class="img-fluid animated" alt="">
+            <img src=<?= $_SESSION["banner"]["banner_img"] ?? "assets/img/hero-img.png" ?> class="img-fluid animated" alt="">
           </div>
         </div>
       </div>
@@ -1189,3 +1199,7 @@
 </body>
 
 </html>
+
+<?php
+// unset($_SESSION["banner"]);
+?>

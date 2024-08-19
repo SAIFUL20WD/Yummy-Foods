@@ -3,7 +3,7 @@ session_start();
 
 $title = $_REQUEST["title"];
 $detail = $_REQUEST["detail"];
-$cta_tilte = $_REQUEST["cta_title"];
+$cta_title = $_REQUEST["cta_title"];
 $cta_link = $_REQUEST["cta_link"];
 $video_link = $_REQUEST["video_link"];
 $banner_image = $_FILES["banner_image"];
@@ -29,6 +29,7 @@ if ($banner_image["size"] == 0) {
 
 if (count($errors) > 0) {
     $_SESSION["errors"] = $errors;
+    $_SESSION["banner"] = [];
     header("Location: ../dashboard/banner.php");
 } else {
     define("UPLOAD_PATH", "../uploads");
@@ -39,10 +40,16 @@ if (count($errors) > 0) {
     move_uploaded_file($banner_image["tmp_name"], UPLOAD_PATH . "/$file_name");
 
     include("../database/env.php");
+    $query = "UPDATE banners SET status=0";
+    $res = mysqli_query($conn, $query);
 
-    $query = "INSERT INTO banners(title, detail, cta_title, cta_link, video_link, banner_img) VALUES ('$title','$detail','$cta_tilte','$cta_link','$video_link','../uploads/$file_name')";
+    $query = "INSERT INTO banners(title, detail, cta_title, cta_link, video_link, banner_img) VALUES ('$title','$detail','$cta_title','$cta_link','$video_link','./uploads/$file_name')";
     $res = mysqli_query($conn, $query);
     if ($res) {
+        $query = "SELECT * FROM banners WHERE status=1";
+        $result = mysqli_query($conn, $query);
+        $banner = mysqli_fetch_assoc($result);
+        $_SESSION["banner"] = $banner;
         $_SESSION["success"] = true;
         header("Location: ../dashboard/banner.php");
     }
